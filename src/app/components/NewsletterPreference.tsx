@@ -54,11 +54,14 @@ export default function NewsletterPreferences() {
         toast.success("Newsletter preferences updated successfully!", { id: toastId });
         setIsPopoverOpen(false);
       } else {
-        throw new Error('Failed to save preferences');
+        toast.error("Failed to update preferences. Please try again.", { id: toastId });
+
+
       }
     } catch (error) {
-      console.error('Error saving preferences:', error);
       toast.error("Failed to update preferences. Please try again.", { id: toastId });
+
+      console.error('Error saving preferences:', error);
     }
   };
 

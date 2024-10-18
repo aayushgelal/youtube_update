@@ -1,22 +1,13 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
-import { Plus, Loader2,Newspaper } from 'lucide-react';
-import { Button } from "@/components/ui/button"
-import { Card, CardContent} from "@/components/ui/card"
+import { Plus, Loader2, Newspaper } from 'lucide-react';
+import { Card, CardContent } from "@/components/ui/card"
 import toast from "react-hot-toast";
-
 import { redirect } from 'next/navigation';
 import ChannelCard from '../components/ChannelCard';
 import AddChannelDialog from '../components/AddDialog';
 import NewsletterPreferences from '../components/NewsletterPreference';
-
-
-
-
-
-
-
 
 const Dashboard = () => {
   const { user } = useUser();
@@ -27,20 +18,14 @@ const Dashboard = () => {
     try {
       const response = await fetch('/api/cron/daily-transcripts');
       if (response.ok) {
-        toast.success(
-      "Newsletter generation triggered successfully!",
-      );
+        toast.success("Newsletter generation triggered successfully!");
       } else {
         throw new Error('Failed to trigger newsletter generation');
       }
     } catch (error) {
       console.error('Error triggering newsletters:', error);
-      
     }
   };
-  
- 
-
 
   const fetchChannels = async () => {
     setIsLoading(true);
@@ -55,7 +40,7 @@ const Dashboard = () => {
     }
   };
  
-  const handleDeleteChannel = async (channelId:string) => {
+  const handleDeleteChannel = async (channelId: string) => {
     try {
       await fetch(`/api/channels/${channelId}`, { method: 'DELETE' });
       fetchChannels();
@@ -67,26 +52,20 @@ const Dashboard = () => {
   useEffect(() => {
     if (user) {
       fetchChannels();
-    }else{
+    } else {
       redirect('/')
     }
   }, [user]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-lg font-medium text-gray-500 ">Your YouTube Channels</h1>
-          <div className="space-x-4 flex flex-row">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 space-y-4 sm:space-y-0">
+          <h1 className="text-lg font-medium text-gray-500">Your YouTube Channels</h1>
+          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
             <AddChannelDialog onAdd={fetchChannels} />
             <NewsletterPreferences />
-
-            {/* <Button onClick={handleGetNewsletters} variant="outline">
-              <Newspaper className="mr-2 h-4 w-4" />
-              Get Newsletters
-            </Button> */}
           </div>
-
         </div>
 
         {isLoading ? (
@@ -94,15 +73,15 @@ const Dashboard = () => {
             <Loader2 className="h-12 w-12 animate-spin text-primary" />
           </div>
         ) : channels.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {channels.map((channel:any) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            {channels.map((channel: any) => (
               <ChannelCard key={channel.id} channel={channel} onDelete={handleDeleteChannel} />
             ))}
           </div>
         ) : (
-          <Card className="text-center py-12">
+          <Card className="text-center py-8 sm:py-12">
             <CardContent>
-              <h2 className="text-2xl font-semibold mb-2 text-primary">No channels yet</h2>
+              <h2 className="text-xl sm:text-2xl font-semibold mb-2 text-primary">No channels yet</h2>
               <p className="text-gray-500 mb-4">Add your first YouTube channel to get started!</p>
               <AddChannelDialog onAdd={fetchChannels} />
             </CardContent>

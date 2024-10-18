@@ -52,6 +52,7 @@ export async function POST(req: Request) {
   if (eventType === 'user.created') {
     try {
         const { id,email_addresses } = evt.data;
+        
 
       const primaryEmail = email_addresses ? email_addresses[0].email_address : null;
       console.log(email_addresses)
