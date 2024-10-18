@@ -71,7 +71,6 @@ export default function NewsletterPreferences() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">Newsletter Preferences</h2>
       
       <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
         <PopoverTrigger asChild>

@@ -77,16 +77,15 @@ const Dashboard = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-lg font-medium text-gray-500 ">Your YouTube Channels</h1>
-          <div className="space-x-4">
+          <div className="space-x-4 flex flex-row">
             <AddChannelDialog onAdd={fetchChannels} />
-            <Button onClick={handleGetNewsletters} variant="outline">
+            <NewsletterPreferences />
+
+            {/* <Button onClick={handleGetNewsletters} variant="outline">
               <Newspaper className="mr-2 h-4 w-4" />
               Get Newsletters
-            </Button>
+            </Button> */}
           </div>
-          <div className="mb-8">
-        <NewsletterPreferences />
-        </div>
 
         </div>
 
