@@ -9,7 +9,7 @@ interface TranscriptDisplayProps {
         {transcript ? (
           <p className="whitespace-pre-wrap">{transcript}</p>
         ) : (
-          <p>No transcript available yet. Enter a channel URL to fetch the latest video's transcript.</p>
+          <p>No transcript available yet. Enter a channel URL to fetch the latest video&apos;s transcript.</p>
         )}
       </div>
     )

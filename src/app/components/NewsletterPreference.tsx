@@ -13,7 +13,7 @@ export default function NewsletterPreferences() {
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
-  useEffect(() => {
+  useEffect( () => {
     fetchPreferences();
   }, []);
 

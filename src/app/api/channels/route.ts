@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
     const realId = await getChannelId(channelId);
 
     // Find or create the User
-    let user = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { clerkid: userId },
     });
 
