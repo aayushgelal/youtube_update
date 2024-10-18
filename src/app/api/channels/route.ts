@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
     });
 
     const channelsWithDetails = await Promise.all(
-      subscriptions.map(async (sub) => {
+      subscriptions.map(async (sub:any) => {
         const response = await youtube.channels.list({
           part: ['snippet'],
           id: [sub.channel.channelId],
