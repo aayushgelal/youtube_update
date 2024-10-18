@@ -8,7 +8,7 @@ import { redirect } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
 
 const FeatureCard = ({ icon, title, description }:any) => (
-  <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow duration-300">
+  <Card className="bg-white shadow-lg hover:shadow-xl ease-in  hover:scale-105 transition-all cursor-pointer duration-300">
     <CardHeader>
       <CardTitle className="flex items-center text-primary">
         {icon}
@@ -28,10 +28,10 @@ const LandingPage = () => {
   }
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-light to-secondary-light px-10">
+    <div className="min-h-screen bg-gradient-to-br from-primary-light to-secondary-light ">
       
       {/* Hero Section */}
-      <section className="py-20 px-4">
+      <section className="py-20 px-14">
         <div className="container mx-auto flex flex-col md:flex-row items-center">
           <div className="md:w-1/2 text-center md:text-left mb-8 md:mb-0">
             <h1 className="text-4xl md:text-5xl font-bold mb-4 text-secondary">Stay Updated with Your Favorite YouTube Creators</h1>
@@ -41,15 +41,16 @@ const LandingPage = () => {
             </Button>
           </div>
           <div className="md:w-1/2">
-            <div className="bg-white rounded-lg shadow-2xl p-6 aspect-video flex items-center justify-center">
-              <p className="text-secondary">Video Placeholder</p>
+            <div className="bg-white rounded-lg shadow-2xl  aspect-video flex items-center justify-center">
+              <video src="Notifi.mp4" autoPlay muted  className='rounded-lg'/>
+
             </div>
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 px-4 bg-white">
+      <section id="features" className="py-20 px-14 bg-white">
         <div className="container mx-auto">
           <h2 className="text-3xl font-bold text-center mb-12 text-secondary">Features</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -78,7 +79,7 @@ const LandingPage = () => {
       </section>
 
       {/* Call to Action Section */}
-      <section className="py-20 px-4 bg-gradient-to-r from-primary to-secondary text-primary-foreground">
+      <section className="py-20  bg-gradient-to-r from-primary to-secondary text-primary-foreground">
         <div className="container mx-auto text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to Stay in the Loop?</h2>
           <p className="text-xl mb-8">Join now and never miss an update from your favorite YouTube creators!</p>

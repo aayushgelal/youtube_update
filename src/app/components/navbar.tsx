@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Menu, Rocket } from 'lucide-react';
 import { redirect } from 'next/navigation';
+import Image from 'next/image';
 
 const Navbar = () => {
   const { user, isSignedIn } = useUser();
@@ -21,11 +22,9 @@ const Navbar = () => {
 
   return (
     <nav className="bg-primary text-primary-foreground shadow-lg">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <div className="flex items-center">
-            <span className="font-bold text-xl">YTDigest</span>
-          </div>
+            <Image src="/NOTIFI.png" alt="logo" width={200} height={200} />
           <div className="hidden md:block">
             <div className="ml-10 flex items-center space-x-4">
               {isSignedIn ? (
