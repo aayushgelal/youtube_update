@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { ClerkProvider } from "@clerk/nextjs";
+import  Navbar  from "./components/navbar";
+import  "@fontsource/poppins";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -27,8 +30,14 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        style={{ fontFamily: "Poppins"}}
       >
+            <ClerkProvider>
+            <Navbar />
+
+
         {children}
+        </ClerkProvider>
       </body>
     </html>
   );
