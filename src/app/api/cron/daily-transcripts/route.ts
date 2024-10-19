@@ -38,7 +38,7 @@ export async function GET(request: Request) {
       await processUserNewsletter(user);
     }
 
-    return NextResponse.json({ message: 'Cron job completed successfully' });
+    return NextResponse.json({ message: users });
   } catch (error) {
     console.error('Cron job failed:', error);
     return NextResponse.json({ error: 'Cron job failed' }, { status: 500 });
