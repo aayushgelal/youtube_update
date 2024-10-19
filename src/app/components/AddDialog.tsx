@@ -8,8 +8,9 @@ const AddChannelDialog = ({ onAdd }: any) => {
   const [channelUrl, setChannelUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
@@ -27,6 +28,7 @@ const AddChannelDialog = ({ onAdd }: any) => {
 
       onAdd();
       setChannelUrl('');
+      setIsOpen(false); // Close the dialog
     } catch (err) {
       setError('Failed to add channel. Please try again.');
     } finally {
@@ -35,9 +37,9 @@ const AddChannelDialog = ({ onAdd }: any) => {
   };
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant={'default'} className='border-primary border-2'>
+        <Button variant={'default'} className='border-primary border-2' onClick={() => setIsOpen(true)}>
           <Plus className="h-4 w-4" /> Add a New Channel
         </Button>
       </DialogTrigger>

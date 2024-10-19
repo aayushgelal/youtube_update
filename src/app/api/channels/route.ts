@@ -103,3 +103,60 @@ export async function POST(req: NextRequest) {
     await prisma.$disconnect();
   }
 }
+export async function DELETE(
+  req: NextRequest,
+ 
+) {
+  const { userId } = getAuth(req);
+  const { channelId } = await req.json();
+
+
+
+  if (!userId) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+
+  try {
+
+    if (!channelId) {
+      return NextResponse.json({ error: 'Channel ID is required' }, { status: 400 });
+    }
+
+    // Find the user
+    const user = await prisma.user.findUnique({
+      where: { clerkid: userId },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+   
+
+ 
+    await prisma.subscription.deleteMany({
+      where: {
+        userId: user.id,
+        channelId: channelId,
+      },
+    });
+
+    const remainingSubscriptions = await prisma.subscription.count({
+      where: { channelId: channelId },
+    });
+
+    if (remainingSubscriptions === 0) {
+      await prisma.channel.delete({
+        where: { id: channelId },
+      });
+    }
+
+    return NextResponse.json({ message: 'Channel unsubscribed successfully' });
+  } catch (error) {
+    console.error('Error deleting channel subscription:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  } finally {
+    await prisma.$disconnect();
+  }
+}

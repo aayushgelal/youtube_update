@@ -20,6 +20,8 @@ export default function NewsletterPreferences() {
   const fetchPreferences = async () => {
     try {
       const response = await fetch('/api/user/newsletter-preferences');
+      console.log('fetched')
+
       if (response.ok) {
         const data = await response.json();
         setFrequency(data.frequency);

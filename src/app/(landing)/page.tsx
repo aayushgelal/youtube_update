@@ -42,7 +42,7 @@ const LandingPage = () => {
           </div>
           <div className="md:w-1/2 w-screen p-4 ">
             <div className="bg-white rounded-lg shadow-2xl  aspect-video flex items-center justify-center">
-              <video src="Notifi.mp4" autoPlay muted  className='rounded-lg'/>
+              <video src="Notifi.mp4" autoPlay muted  className='rounded-lg' playsInline loop/>
 
             </div>
           </div>

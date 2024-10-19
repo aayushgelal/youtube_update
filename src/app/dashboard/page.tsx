@@ -40,9 +40,13 @@ const Dashboard = () => {
     }
   };
  
-  const handleDeleteChannel = async (channelId: string) => {
+  const handleDeleteChannel = async (channelId: number) => {
     try {
-      await fetch(`/api/channels/${channelId}`, { method: 'DELETE' });
+      await fetch("/api/channels", { method: 'DELETE', headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ channelId }),
+   });
       fetchChannels();
     } catch (error) {
       console.error('Error deleting channel:', error);
