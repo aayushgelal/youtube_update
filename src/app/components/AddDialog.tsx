@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Plus, Loader2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const AddChannelDialog = ({ onAdd }: any) => {
   const [channelUrl, setChannelUrl] = useState('');
@@ -14,6 +15,12 @@ const AddChannelDialog = ({ onAdd }: any) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+    setIsOpen(false); // Close the dialog
+   
+    const toastid =  toast.loading("Adding the channel")
+
+    
+
 
     try {
       const response = await fetch('/api/channels', {
@@ -21,14 +28,15 @@ const AddChannelDialog = ({ onAdd }: any) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ channelId: channelUrl }),
       });
+      toast.dismiss(toastid)
+    
 
       if (!response.ok) {
-        throw new Error('Failed to add channel');
+        toast.error("Failed to Add Channel");
       }
-
+      toast.success("Channel Added Successfully")
       onAdd();
       setChannelUrl('');
-      setIsOpen(false); // Close the dialog
     } catch (err) {
       setError('Failed to add channel. Please try again.');
     } finally {

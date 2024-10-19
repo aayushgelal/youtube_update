@@ -4,7 +4,7 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import  Navbar  from "./components/navbar";
 import  "@fontsource/poppins";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "react-hot-toast";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -33,9 +33,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         style={{ fontFamily: "Poppins"}}
       >
+            <Toaster position="top-right" reverseOrder={false} />
+
             <ClerkProvider>
             <Navbar />
-            <Toaster />
+
 
 
         {children}

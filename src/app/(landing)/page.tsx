@@ -2,7 +2,6 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Youtube, Mail, Clock, Sparkles, Rocket } from 'lucide-react';
-import Navbar from '../components/navbar';
 import { SignUpButton, useAuth } from '@clerk/nextjs';
 import { redirect } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
@@ -42,7 +41,7 @@ const LandingPage = () => {
           </div>
           <div className="md:w-1/2 w-screen p-4 ">
             <div className="bg-white rounded-lg shadow-2xl  aspect-video flex items-center justify-center">
-              <video src="Notifi.mp4" autoPlay muted  className='rounded-lg' playsInline loop/>
+              <video src="https://qb09xax2tfvfligf.public.blob.vercel-storage.com/Notifi_2-s9JHsu2VdAWPMDHrxnYV5e9Ht3fFjy.mp4" autoPlay muted  className='rounded-lg' playsInline loop/>
 
             </div>
           </div>
