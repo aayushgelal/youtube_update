@@ -1,9 +1,14 @@
 import { clerkMiddleware,createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
 
 
-const isPublicRoute = createRouteMatcher(['/sign-in(.*)', '/sign-up(.*)','/landing(.*)',"/(.*)"])
+const isPublicRoute = createRouteMatcher(['/sign-in(.*)', '/sign-up(.*)','/landing(.*)',"/(.*)",  // Add this line
+])
 
 export default clerkMiddleware((auth, request) => {
+  if (request.nextUrl.pathname === '/api/cron/daily-transcripts') {
+    return NextResponse.next();
+  }
   if (!isPublicRoute(request)) {
     auth().protect()
   }
