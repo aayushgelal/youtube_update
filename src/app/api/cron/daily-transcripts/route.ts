@@ -38,7 +38,7 @@ export async function GET(request: Request) {
     // Processing all users' newsletters
     for (const user of users) {
       const result = await processUserNewsletter(user);
-      results.push(result); // Store result for this user
+      results.push(user.subscriptions); // Store result for this user
     }
 
     // Now, after everything has processed, return the results
