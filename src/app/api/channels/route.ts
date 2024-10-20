@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
         });
 
         const channelDetails = response.data.items?.[0]?.snippet;
-        console.log(channelDetails?.title)
+        console.log(channelDetails?.title,"is the channel name")
 
         return {
           id: sub.channel.id,
