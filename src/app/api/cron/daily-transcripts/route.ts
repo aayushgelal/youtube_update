@@ -33,7 +33,7 @@ export async function GET(request: Request) {
       }
     });
 
-    let results = []; // To store the results from each user processing
+    const results = []; // To store the results from each user processing
 
     // Processing all users' newsletters
     for (const user of users) {
