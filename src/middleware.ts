@@ -1,22 +1,28 @@
-import { clerkMiddleware,createRouteMatcher } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { clerkMiddleware } from "@clerk/nextjs/server";
 
-
-const isPublicRoute = createRouteMatcher(['/sign-in(.*)', '/sign-up(.*)','/landing(.*)',"/(.*)",
-'/api/cron/daily-transcripts'  // Add this line
-])
-
-export default clerkMiddleware((auth, request) => {
-
-  if (!isPublicRoute(request)) {
-    auth().protect()
+function customMiddleware(request:NextRequest) {
+  if (request.nextUrl.pathname === '/api/cron/daily-transcripts') {
+    console.log("Allowing cron job route to pass through");
+    return NextResponse.next();
   }
-})
+
+  // Your other custom middleware logic here
+  return null;
+}
+
+export default clerkMiddleware((auth,req) => {
+  const response = customMiddleware(req);
+  if (response) {
+    return response;
+  }
+  // If no custom response, let Clerk handle it
+  return NextResponse.next();
+});
+
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
     '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    // Always run for API routes
     '/(api|trpc)(.*)',
   ],
 };
