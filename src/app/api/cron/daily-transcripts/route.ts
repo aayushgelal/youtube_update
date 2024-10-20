@@ -19,9 +19,8 @@ export async function GET(request: Request) {
         OR: [
           { newsletterFrequency: 'daily' },
           { newsletterFrequency: 'weekly', AND: { 
-            weeklyNewsletterDays: {has:dayOfWeek}
+            weeklyNewsletterDays: { has: dayOfWeek }
            }
-          
           }
         ]
       },
@@ -34,11 +33,17 @@ export async function GET(request: Request) {
       }
     });
 
+    let results = []; // To store the results from each user processing
+
+    // Processing all users' newsletters
     for (const user of users) {
-      await processUserNewsletter(user);
+      const result = await processUserNewsletter(user);
+      results.push(result); // Store result for this user
     }
 
-    return NextResponse.json({ message: users });
+    // Now, after everything has processed, return the results
+    return NextResponse.json({ message: 'All newsletters processed successfully', details: results });
+
   } catch (error) {
     console.error('Cron job failed:', error);
     return NextResponse.json({ error: 'Cron job failed' }, { status: 500 });
@@ -50,6 +55,7 @@ export async function GET(request: Request) {
 async function processUserNewsletter(user: any) {
   const shuffledSubscriptions = user.subscriptions.sort(() => 0.5 - Math.random());
   let newsletterSent = false;
+  let processedInfo = { email: user.email, sent: false, videoId: '', channelId: null }; // Store details of the process
 
   for (const subscription of shuffledSubscriptions) {
     try {
@@ -104,6 +110,15 @@ async function processUserNewsletter(user: any) {
       });
 
       console.log(`Processed video ${videoId} for channel: ${subscription.channel.channelId} and sent newsletter to user: ${user.email}`);
+
+      // Update processedInfo to reflect what was sent
+      processedInfo = {
+        email: user.email,
+        sent: true,
+        videoId: videoId,
+        channelId: subscription.channel.channelId
+      };
+
       newsletterSent = true;
       break; // Exit the subscription loop after processing one video for this user
     } catch (error) {
@@ -114,6 +129,8 @@ async function processUserNewsletter(user: any) {
   if (!newsletterSent) {
     console.log(`No new newsletters available for user: ${user.email}`);
   }
+
+  return processedInfo; // Return what was processed for this user
 }
 
 async function getVideoDetails(videoId: string) {
