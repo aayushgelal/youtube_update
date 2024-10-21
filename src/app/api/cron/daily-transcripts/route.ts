@@ -57,7 +57,7 @@ async function processUserNewsletter(user: any) {
   let newsletterSent = false;
   let processedInfo = { email: user.email, sent: false, videoId: '', channelId: null,transcript:'',newsletter:'' }; // Store details of the process
 
-  for (const subscription of shuffledSubscriptions) {
+  for (const subscription of user.subscriptions) {
     try {
       const videoId = await getLatestUnprocessedVideoId(subscription.channel.channelId, prisma);
       
@@ -89,11 +89,6 @@ async function processUserNewsletter(user: any) {
       const newsletter = await generateSummaryAndLearnings(transcript, videoDetails);
       const html = htmlContent(videoDetails, newsletter, videoId);
 
-      await sendEmail(
-        user.email,
-        `${user.newsletterFrequency.charAt(0).toUpperCase() + user.newsletterFrequency.slice(1)} Digest: ${videoDetails.channelTitle} : ${videoDetails.title}`,
-        html
-      );
       processedInfo = {
         email: user.email,
         sent: true,
@@ -102,6 +97,13 @@ async function processUserNewsletter(user: any) {
         newsletter:newsletter,
         channelId: subscription.channel.channelId
       };
+
+      // await sendEmail(
+      //   user.email,
+      //   `${user.newsletterFrequency.charAt(0).toUpperCase() + user.newsletterFrequency.slice(1)} Digest: ${videoDetails.channelTitle} : ${videoDetails.title}`,
+      //   html
+      // );
+      
 
       // Create or get the video record
       const video = await prisma.video.upsert({
