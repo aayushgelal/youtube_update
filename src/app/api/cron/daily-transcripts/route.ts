@@ -64,10 +64,10 @@ async function processUserNewsletter(user: any) {
       // Update processedInfo to reflect what was sent
    
 
-      if (!videoId) {
-        console.log(`No new videos for channel: ${subscription.channel.channelId}`);
-        continue;
-      }
+      // if (!videoId) {
+      //   console.log(`No new videos for channel: ${subscription.channel.channelId}`);
+      //   continue;
+      // }
 
       // // Check if this video has already been sent to the user
       // const alreadySent = await prisma.sentTranscript.findFirst({
@@ -83,6 +83,7 @@ async function processUserNewsletter(user: any) {
       //   console.log(`Video ${videoId} has already been sent to user ${user.email}. Skipping.`);
       //   continue;
       // }
+      if(videoId){
 
       const transcript = (await getTranscript(videoId)).substring(0, 300);
       const videoDetails = await getVideoDetails(videoId);
@@ -127,6 +128,7 @@ async function processUserNewsletter(user: any) {
 
       newsletterSent = true;
       break; // Exit the subscription loop after processing one video for this user
+      }
     } catch (error) {
       console.error(`Error processing channel ${subscription.channel.channelId} for user ${user.email}:`, error);
     }
