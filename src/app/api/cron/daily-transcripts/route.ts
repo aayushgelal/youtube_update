@@ -57,32 +57,32 @@ async function processUserNewsletter(user: any) {
   let newsletterSent = false;
   let processedInfo = { email: user.email, sent: false, videoId: '', channelId: null,transcript:'',newsletter:'' }; // Store details of the process
 
-  for (const subscription of user.subscriptions) {
+  for (const subscription of shuffledSubscriptions) {
     try {
       const videoId = await getLatestUnprocessedVideoId(subscription.channel.channelId, prisma);
       
       // Update processedInfo to reflect what was sent
    
 
-      // if (!videoId) {
-      //   console.log(`No new videos for channel: ${subscription.channel.channelId}`);
-      //   continue;
-      // }
+      if (!videoId) {
+        console.log(`No new videos for channel: ${subscription.channel.channelId}`);
+        continue;
+      }
 
-      // // Check if this video has already been sent to the user
-      // const alreadySent = await prisma.sentTranscript.findFirst({
-      //   where: {
-      //     userId: user.id,
-      //     video: {
-      //       videoId: videoId
-      //     }
-      //   }
-      // });
+      // Check if this video has already been sent to the user
+      const alreadySent = await prisma.sentTranscript.findFirst({
+        where: {
+          userId: user.id,
+          video: {
+            videoId: videoId
+          }
+        }
+      });
 
-      // if (alreadySent) {
-      //   console.log(`Video ${videoId} has already been sent to user ${user.email}. Skipping.`);
-      //   continue;
-      // }
+      if (alreadySent) {
+        console.log(`Video ${videoId} has already been sent to user ${user.email}. Skipping.`);
+        continue;
+      }
       if(videoId){
 
       const transcript = (await getTranscript(videoId)).substring(0, 300);
@@ -99,11 +99,11 @@ async function processUserNewsletter(user: any) {
         channelId: subscription.channel.channelId
       };
 
-      // await sendEmail(
-      //   user.email,
-      //   `${user.newsletterFrequency.charAt(0).toUpperCase() + user.newsletterFrequency.slice(1)} Digest: ${videoDetails.channelTitle} : ${videoDetails.title}`,
-      //   html
-      // );
+      await sendEmail(
+        user.email,
+        `${user.newsletterFrequency.charAt(0).toUpperCase() + user.newsletterFrequency.slice(1)} Digest: ${videoDetails.channelTitle} : ${videoDetails.title}`,
+        html
+      );
       
 
       // Create or get the video record
