@@ -38,7 +38,7 @@ export async function GET(request: Request) {
     // Processing all users' newsletters
     for (const user of users) {
       const result = await processUserNewsletter(user);
-      results.push(user.subscriptions); // Store result for this user
+      results.push(result); // Store result for this user
     }
 
     // Now, after everything has processed, return the results
@@ -60,25 +60,34 @@ async function processUserNewsletter(user: any) {
   for (const subscription of shuffledSubscriptions) {
     try {
       const videoId = await getLatestUnprocessedVideoId(subscription.channel.channelId, prisma);
+      
+      // Update processedInfo to reflect what was sent
+      processedInfo = {
+        email: user.email,
+        sent: true,
+        videoId: videoId?videoId:"",
+        channelId: subscription.channel.channelId
+      };
+
       if (!videoId) {
         console.log(`No new videos for channel: ${subscription.channel.channelId}`);
         continue;
       }
 
-      // Check if this video has already been sent to the user
-      const alreadySent = await prisma.sentTranscript.findFirst({
-        where: {
-          userId: user.id,
-          video: {
-            videoId: videoId
-          }
-        }
-      });
+      // // Check if this video has already been sent to the user
+      // const alreadySent = await prisma.sentTranscript.findFirst({
+      //   where: {
+      //     userId: user.id,
+      //     video: {
+      //       videoId: videoId
+      //     }
+      //   }
+      // });
 
-      if (alreadySent) {
-        console.log(`Video ${videoId} has already been sent to user ${user.email}. Skipping.`);
-        continue;
-      }
+      // if (alreadySent) {
+      //   console.log(`Video ${videoId} has already been sent to user ${user.email}. Skipping.`);
+      //   continue;
+      // }
 
       const transcript = (await getTranscript(videoId)).substring(0, 300);
       const videoDetails = await getVideoDetails(videoId);
@@ -110,14 +119,6 @@ async function processUserNewsletter(user: any) {
       });
 
       console.log(`Processed video ${videoId} for channel: ${subscription.channel.channelId} and sent newsletter to user: ${user.email}`);
-
-      // Update processedInfo to reflect what was sent
-      processedInfo = {
-        email: user.email,
-        sent: true,
-        videoId: videoId,
-        channelId: subscription.channel.channelId
-      };
 
       newsletterSent = true;
       break; // Exit the subscription loop after processing one video for this user
