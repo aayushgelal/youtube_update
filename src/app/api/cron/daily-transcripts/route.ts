@@ -55,19 +55,14 @@ export async function GET(request: Request) {
 async function processUserNewsletter(user: any) {
   const shuffledSubscriptions = user.subscriptions.sort(() => 0.5 - Math.random());
   let newsletterSent = false;
-  let processedInfo = { email: user.email, sent: false, videoId: '', channelId: null }; // Store details of the process
+  let processedInfo = { email: user.email, sent: false, videoId: '', channelId: null,transcript:'',newsletter:'' }; // Store details of the process
 
   for (const subscription of shuffledSubscriptions) {
     try {
       const videoId = await getLatestUnprocessedVideoId(subscription.channel.channelId, prisma);
       
       // Update processedInfo to reflect what was sent
-      processedInfo = {
-        email: user.email,
-        sent: true,
-        videoId: videoId?videoId:"",
-        channelId: subscription.channel.channelId
-      };
+   
 
       if (!videoId) {
         console.log(`No new videos for channel: ${subscription.channel.channelId}`);
@@ -99,6 +94,14 @@ async function processUserNewsletter(user: any) {
         `${user.newsletterFrequency.charAt(0).toUpperCase() + user.newsletterFrequency.slice(1)} Digest: ${videoDetails.channelTitle} : ${videoDetails.title}`,
         html
       );
+      processedInfo = {
+        email: user.email,
+        sent: true,
+        videoId: videoId?videoId:"",
+        transcript:transcript,
+        newsletter:newsletter,
+        channelId: subscription.channel.channelId
+      };
 
       // Create or get the video record
       const video = await prisma.video.upsert({
