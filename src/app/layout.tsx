@@ -33,6 +33,8 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         style={{ fontFamily: "Poppins"}}
       >
+              <script defer src="https://feedback-form-saas.vercel.app/embed.js" data-site-id="cm2kpb0y90001ksruqoxke023"></script>
+
             <Toaster position="top-right" reverseOrder={false} />
 
             <ClerkProvider>

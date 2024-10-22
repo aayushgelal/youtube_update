@@ -12,17 +12,28 @@ const prisma = new PrismaClient();
 export async function GET(request: Request) {
   try {
     const today = new Date();
-    const dayOfWeek = today.getDay(); // 0 (Sunday) to 6 (Saturday)
+    const dayOfWeek = today.getDay();
+    const todayDate = today.toISOString().split('T')[0]; // Gets YYYY-MM-DD
 
     const users = await prisma.user.findMany({
       where: {
         OR: [
           { newsletterFrequency: 'daily' },
-          { newsletterFrequency: 'weekly', AND: { 
-            weeklyNewsletterDays: { has: dayOfWeek }
-           }
+          { 
+            newsletterFrequency: 'weekly', 
+            AND: { weeklyNewsletterDays: { has: dayOfWeek } }
           }
-        ]
+        ],
+        NOT: {
+          sentTranscripts: {
+            some: {
+              sentAt: {
+                gte: new Date(todayDate),
+                lt: new Date(todayDate + 'T23:59:59.999Z')
+              }
+            }
+          }
+        }
       },
       include: {
         subscriptions: {
@@ -33,16 +44,17 @@ export async function GET(request: Request) {
       }
     });
 
-    const results = []; // To store the results from each user processing
+    const results = [];
 
-    // Processing all users' newsletters
     for (const user of users) {
       const result = await processUserNewsletter(user);
-      results.push(result); // Store result for this user
+      results.push(result);
     }
 
-    // Now, after everything has processed, return the results
-    return NextResponse.json({ message: 'All newsletters processed successfully', details: results });
+    return NextResponse.json({ 
+      message: 'All newsletters processed successfully', 
+      details: results 
+    });
 
   } catch (error) {
     console.error('Cron job failed:', error);
@@ -55,21 +67,27 @@ export async function GET(request: Request) {
 async function processUserNewsletter(user: any) {
   const shuffledSubscriptions = user.subscriptions.sort(() => 0.5 - Math.random());
   let newsletterSent = false;
-  let processedInfo = { email: user.email, sent: false, videoId: '', channelId: null,transcript:'',newsletter:'' }; // Store details of the process
+  let processedInfo = { 
+    email: user.email, 
+    sent: false, 
+    videoId: '', 
+    channelId: null, 
+    transcript: '', 
+    newsletter: '' 
+  };
 
   for (const subscription of shuffledSubscriptions) {
     try {
       const videoId = await getLatestUnprocessedVideoId(subscription.channel.channelId, prisma);
-      
-      // Update processedInfo to reflect what was sent
-   
 
       if (!videoId) {
         console.log(`No new videos for channel: ${subscription.channel.channelId}`);
         continue;
       }
 
-      // Check if this video has already been sent to the user
+     
+
+      // Check if this specific video was ever sent
       const alreadySent = await prisma.sentTranscript.findFirst({
         where: {
           userId: user.id,
@@ -83,9 +101,8 @@ async function processUserNewsletter(user: any) {
         console.log(`Video ${videoId} has already been sent to user ${user.email}. Skipping.`);
         continue;
       }
-      if(videoId){
 
-      const transcript = (await getTranscript(videoId)).substring(0, 300);
+      const transcript = (await getTranscript(videoId)).substring(0, 600);
       const videoDetails = await getVideoDetails(videoId);
       const newsletter = await generateSummaryAndLearnings(transcript, videoDetails);
       const html = htmlContent(videoDetails, newsletter, videoId);
@@ -93,9 +110,9 @@ async function processUserNewsletter(user: any) {
       processedInfo = {
         email: user.email,
         sent: true,
-        videoId: videoId?videoId:"",
-        transcript:transcript,
-        newsletter:newsletter,
+        videoId: videoId,
+        transcript: transcript,
+        newsletter: newsletter,
         channelId: subscription.channel.channelId
       };
 
@@ -104,7 +121,6 @@ async function processUserNewsletter(user: any) {
         `${user.newsletterFrequency.charAt(0).toUpperCase() + user.newsletterFrequency.slice(1)} Digest: ${videoDetails.channelTitle} : ${videoDetails.title}`,
         html
       );
-      
 
       // Create or get the video record
       const video = await prisma.video.upsert({
@@ -127,8 +143,7 @@ async function processUserNewsletter(user: any) {
       console.log(`Processed video ${videoId} for channel: ${subscription.channel.channelId} and sent newsletter to user: ${user.email}`);
 
       newsletterSent = true;
-      break; // Exit the subscription loop after processing one video for this user
-      }
+      break;
     } catch (error) {
       console.error(`Error processing channel ${subscription.channel.channelId} for user ${user.email}:`, error);
     }
@@ -138,7 +153,7 @@ async function processUserNewsletter(user: any) {
     console.log(`No new newsletters available for user: ${user.email}`);
   }
 
-  return processedInfo; // Return what was processed for this user
+  return processedInfo;
 }
 
 async function getVideoDetails(videoId: string) {
