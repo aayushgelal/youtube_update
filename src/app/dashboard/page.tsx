@@ -14,18 +14,7 @@ const Dashboard = () => {
   const [channels, setChannels] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const handleGetNewsletters = async () => {
-    try {
-      const response = await fetch('/api/cron/daily-transcripts');
-      if (response.ok) {
-        toast.success("Newsletter generation triggered successfully!");
-      } else {
-        throw new Error('Failed to trigger newsletter generation');
-      }
-    } catch (error) {
-      console.error('Error triggering newsletters:', error);
-    }
-  };
+
 
   const fetchChannels = async () => {
     setIsLoading(true);
