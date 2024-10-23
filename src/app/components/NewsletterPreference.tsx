@@ -5,35 +5,44 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "react-hot-toast";
+import { useUser } from '@clerk/nextjs';
 
 const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 export default function NewsletterPreferences() {
+  const { user } = useUser();
   const [frequency, setFrequency] = useState('daily');
-  const [selectedDays, setSelectedDays] = useState<number[]>([]);
+  const [selectedDays, setSelectedDays] = useState<number[]>([4]);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-
-  useEffect( () => {
-    fetchPreferences();
-  }, []);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchPreferences = async () => {
+    if (!user) return;
+    
     try {
+      setError(null);
       const response = await fetch('/api/user/newsletter-preferences');
-      console.log('fetched')
-
-      if (response.ok) {
-        const data = await response.json();
-        setFrequency(data.frequency);
-        setSelectedDays(data.weeklyDays);
-      } else {
+      if (!response.ok) {
         throw new Error('Failed to fetch preferences');
       }
+      const data = await response.json();
+      setFrequency(data.frequency || 'daily');
+      setSelectedDays(data.weeklyDays || [4]);
     } catch (error) {
       console.error('Error fetching preferences:', error);
-      toast.error("Error fetching data. Please try again.");
+      setError('Failed to load preferences');
+      toast.error("Unable to load preferences");
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      fetchPreferences();
+    }
+  }, [user]);
 
   const handleDayToggle = (day: number) => {
     setSelectedDays(prev => 
@@ -42,6 +51,8 @@ export default function NewsletterPreferences() {
   };
 
   const savePreferences = async () => {
+    if (!user) return;
+
     const toastId = toast.loading("Updating preferences...");
     try {
       const response = await fetch('/api/user/newsletter-preferences', {
@@ -52,18 +63,16 @@ export default function NewsletterPreferences() {
           weeklyDays: frequency === 'weekly' ? selectedDays : [] 
         }),
       });
-      if (response.ok) {
-        toast.success("Newsletter preferences updated successfully!", { id: toastId });
-        setIsPopoverOpen(false);
-      } else {
-        toast.error("Failed to update preferences. Please try again.", { id: toastId });
-
-
+      
+      if (!response.ok) {
+        throw new Error('Failed to update preferences');
       }
+      
+      toast.success("Preferences updated successfully!", { id: toastId });
+      setIsPopoverOpen(false);
     } catch (error) {
-      toast.error("Failed to update preferences. Please try again.", { id: toastId });
-
       console.error('Error saving preferences:', error);
+      toast.error("Failed to update preferences", { id: toastId });
     }
   };
 
@@ -74,9 +83,24 @@ export default function NewsletterPreferences() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <Button disabled variant="outline">
+        Loading preferences...
+      </Button>
+    );
+  }
+
+  if (error) {
+    return (
+      <Button variant="outline" onClick={fetchPreferences}>
+        Retry loading preferences
+      </Button>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      
       <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
         <PopoverTrigger asChild>
           <Button variant="outline">
@@ -107,7 +131,7 @@ export default function NewsletterPreferences() {
                       id={day}
                       checked={selectedDays.includes(index)}
                       onCheckedChange={() => handleDayToggle(index)}
-    />
+                    />
                     <Label htmlFor={day}>{day}</Label>
                   </div>
                 ))}
